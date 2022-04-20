@@ -1,11 +1,13 @@
 package com.loki.makenote.adapter;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -26,6 +28,9 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesViewHol
     private Context mContext;
     private List<Notes> mNotes;
     private NotesClickListener mListener;
+
+    private AlertDialog.Builder dialogBuilder;
+    private AlertDialog dialog;
 
     public NotesAdapter(Context mContext, List<Notes> mNotes, NotesClickListener mListener) {
         this.mContext = mContext;
@@ -57,7 +62,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesViewHol
     public class NotesViewHolder extends RecyclerView.ViewHolder {
 
         CardView mCardNotes;
-        TextView mTxtTitle, mTxtNotes, mtxtDate;
+        TextView mTxtTitle, mTxtNotes, mtxtDate, mNoteTitle, mNoteBody, mCancelBtn, mEditBtn;
         ImageView mIvPin;
 
         public NotesViewHolder(@NonNull View itemView) {
@@ -88,16 +93,11 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesViewHol
                 mIvPin.setImageResource(0);
             }
 
-            //change card background
-            int colorCode = getRandomColor();
-            mCardNotes.setCardBackgroundColor(itemView.getResources().getColor(colorCode, null));
-
             //notes card on clicked
             mCardNotes.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
-                    mListener.onClick(notes);
+                    createPopUpDetail(notes);
                 }
             });
 
@@ -112,26 +112,44 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesViewHol
             });
 
         }
-    }
 
-    private int getRandomColor() {
-        List<Integer> colorCode = new ArrayList<>();
 
-        colorCode.add(R.color.color1);
-        colorCode.add(R.color.color2);
-        colorCode.add(R.color.color3);
-        colorCode.add(R.color.color4);
-        colorCode.add(R.color.color5);
-        colorCode.add(R.color.color11);
-        colorCode.add(R.color.color5);
-        colorCode.add(R.color.color7);
-        colorCode.add(R.color.color8);
-        colorCode.add(R.color.color9);
-        colorCode.add(R.color.color10);
+        //create a popup
 
-        Random random = new Random();
-        int randomColor = random.nextInt(colorCode.size());
+        private void createPopUpDetail(Notes notes) {
 
-        return colorCode.get(randomColor);
+            dialogBuilder = new AlertDialog.Builder(mContext);
+            View popUp = LayoutInflater.from(mContext).inflate(R.layout.popup_detail, null);
+
+            mNoteTitle = (TextView) popUp.findViewById(R.id.note_header);
+            mNoteBody = (TextView) popUp.findViewById(R.id.notes_body);
+
+            mCancelBtn = (TextView) popUp.findViewById(R.id.exit_btn);
+            mEditBtn = (TextView) popUp.findViewById(R.id.edit_btn);
+
+            mNoteTitle.setText(notes.getTitle());
+            mNoteBody.setText(notes.getNotes());
+
+            dialogBuilder.setView(popUp);
+            dialog = dialogBuilder.create();
+            dialog.show();
+
+            mCancelBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialog.dismiss();
+                }
+            });
+
+
+            mEditBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mListener.onClick(notes);
+                    dialog.dismiss();
+                }
+            });
+
+        }
     }
 }
