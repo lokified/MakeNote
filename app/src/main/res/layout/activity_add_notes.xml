@@ -5,14 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#1C1F20"
+    android:background="#101313"
     tools:context=".AddNotesActivity">
 
 
     <androidx.appcompat.widget.Toolbar
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/grey"
+        android:background="#1D2022"
         android:id="@+id/toolBar_notes">
 
 
@@ -45,7 +45,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:cardCornerRadius="8dp"
-        app:cardBackgroundColor="@color/grey"
+        app:cardBackgroundColor="#1D2022"
         android:layout_margin="16dp">
 
         <EditText
@@ -56,8 +56,8 @@
             android:textColorHint="#8A8D8E"
             android:padding="8dp"
             android:layout_margin="8dp"
-            android:textSize="20sp"
-            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textColor="#BCAFAF"
             android:singleLine="true"
             android:lineHeight="1dp"
             android:background="@android:color/transparent"/>
@@ -68,7 +68,7 @@
         android:layout_width="match_parent"
         android:layout_height="200dp"
         app:cardCornerRadius="8dp"
-        app:cardBackgroundColor="@color/grey"
+        app:cardBackgroundColor="#1D2022"
         android:layout_margin="16dp">
 
         <EditText
@@ -79,8 +79,8 @@
             android:textColorHint="#8A8D8E"
             android:background="@android:color/transparent"
             android:layout_margin="8dp"
-            android:textColor="@color/white"
-            android:textSize="18sp"
+            android:textColor="#BCAFAF"
+            android:textSize="15sp"
             android:textStyle="normal"/>
     </androidx.cardview.widget.CardView>
 
