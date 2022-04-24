@@ -11,6 +11,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.loki.makenote.models.Notes;
 
 import java.text.SimpleDateFormat;
@@ -63,7 +64,6 @@ public class AddNotesActivity extends AppCompatActivity {
                     intent.putExtra("note",mNotes);
                     setResult(Activity.RESULT_OK, intent);
                     finish();
-                    Toast.makeText(AddNotesActivity.this, "Notes Saved", Toast.LENGTH_SHORT).show();
                 }
             }
         });

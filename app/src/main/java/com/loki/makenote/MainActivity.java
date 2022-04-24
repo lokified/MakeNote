@@ -3,8 +3,8 @@ package com.loki.makenote;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
-import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
@@ -14,13 +14,14 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.loki.makenote.adapter.NotesAdapter;
 import com.loki.makenote.database.RoomDB;
 import com.loki.makenote.models.Notes;
@@ -37,8 +38,11 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     FloatingActionButton mBtnAdd;
     RecyclerView mRecyclerNotes;
     SearchView mSearchNote;
+    CoordinatorLayout mCoordinate;
 
     Notes selectedNote;
+    Snackbar snackbar;
+    boolean isDelete;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         mBtnAdd = findViewById(R.id.fad_add);
         mRecyclerNotes = findViewById(R.id.recycler_home);
         mSearchNote = findViewById(R.id.search_view);
-
+        mCoordinate = findViewById(R.id.coordinator_main);
 
 
         //get all notes from database
@@ -108,6 +112,8 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 notes.clear();
                 notes.addAll(database.mainDao().getAll());
                 mNotesAdapter.notifyDataSetChanged();
+
+                showSnackBar("Saved");
             }
         }
         else if (requestCode == 102) {
@@ -118,6 +124,8 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 notes.clear();
                 notes.addAll(database.mainDao().getAll());
                 mNotesAdapter.notifyDataSetChanged();
+
+                showSnackBar("Updated");
             }
         }
     }
@@ -161,11 +169,13 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
             case R.id.pin:
                 if (selectedNote.isPinned()){
                     database.mainDao().pin(selectedNote.getId(), false);
-                    Toast.makeText(this, "unpinned", Toast.LENGTH_SHORT).show();
+
+                    showSnackBar("Unpinned");
                 }
                 else {
                     database.mainDao().pin(selectedNote.getId(), true);
-                    Toast.makeText(this, "pinned", Toast.LENGTH_SHORT).show();
+
+                    showSnackBar("Pinned");
                 }
                 notes.clear();
                 notes.addAll(database.mainDao().getAll());
@@ -192,10 +202,19 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
 
-                        database.mainDao().delete(selectedNote);
-                        notes.remove(selectedNote);
-                        mNotesAdapter.notifyDataSetChanged();
-                        Toast.makeText(MainActivity.this, "Note deleted", Toast.LENGTH_SHORT).show();
+                        showSnackBar("Note deleted");
+
+                        snackbar.setActionTextColor(getColor(R.color.color2));
+                        snackbar.setAction("Undo", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                 isDelete = false;
+                                 showSnackBar("Undone");
+
+                            }
+                        });
+
+                        deleteNote();
                     }
                 })
                 .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
@@ -204,5 +223,20 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 return;
             }
         }).show();
+    }
+
+    private void deleteNote(){
+        isDelete = true;
+        database.mainDao().delete(selectedNote);
+        notes.remove(selectedNote);
+        mNotesAdapter.notifyDataSetChanged();
+
+    }
+
+
+    public void showSnackBar(String text) {
+        snackbar = Snackbar.make(mCoordinate, text, Snackbar.LENGTH_LONG);
+        snackbar.setTextColor(getColor(R.color.color2));
+        snackbar.show();
     }
 }
